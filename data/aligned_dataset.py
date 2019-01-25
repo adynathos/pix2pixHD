@@ -58,7 +58,7 @@ class AlignedDataset(BaseDataset):
         if not self.opt.no_instance:
             inst_path = self.inst_paths[index]
             inst = Image.open(inst_path)
-            inst_tensor = transform_A(inst)
+            inst_tensor = transform_A(inst).int() # sometimes inst_tensor is float and it crashes the dataloader
 
             if self.opt.load_features:
                 feat_path = self.feat_paths[index]            

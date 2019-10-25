@@ -8,6 +8,7 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 
+
 class Pix2PixHDModel(BaseModel):
     def name(self):
         return 'Pix2PixHDModel'
@@ -115,10 +116,16 @@ class Pix2PixHDModel(BaseModel):
             input_label = label_map.data.cuda()
         else:
             # create one-hot vector for label map 
-            size = label_map.size()
-            oneHot_size = (size[0], self.opt.label_nc, size[2], size[3])
-            input_label = torch.cuda.FloatTensor(torch.Size(oneHot_size)).zero_()
-            input_label = input_label.scatter_(1, label_map.data.long().cuda(), 1.0)
+            size = label_map.shape
+
+            # if labels are already one-hot, don't convert
+            if size[1] == self.opt.label_nc:
+                input_label = label_map
+            else:
+                oneHot_size = (size[0], self.opt.label_nc, size[2], size[3])
+                input_label = torch.cuda.FloatTensor(torch.Size(oneHot_size)).zero_()
+                input_label = input_label.scatter_(1, label_map.data.long().cuda(), 1.0)
+
             if self.opt.data_type == 16:
                 input_label = input_label.half()
 
@@ -194,6 +201,9 @@ class Pix2PixHDModel(BaseModel):
         
         # Only return the fake_B image if necessary to save BW
         return [ self.loss_filter( loss_G_GAN, loss_G_GAN_Feat, loss_G_VGG, loss_D_real, loss_D_fake ), None if not infer else fake_image ]
+
+    # def inference_on_onehot(self, label_onehot, inst=None, image=None):
+
 
     def inference(self, label, inst, image=None):
         # Encode Inputs

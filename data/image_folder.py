@@ -28,6 +28,8 @@ def make_dataset(dir):
                 path = os.path.join(root, fname)
                 images.append(path)
 
+    print(f'Found {images.__len__()} (out of {fnames.__len__()} files) images in {root}')
+
     return images
 
 
@@ -44,7 +46,7 @@ class ImageFolder(data.Dataset):
             raise(RuntimeError("Found 0 images in: " + root + "\n"
                                "Supported image extensions are: " +
                                ",".join(IMG_EXTENSIONS)))
-
+        
         self.root = root
         self.imgs = imgs
         self.transform = transform

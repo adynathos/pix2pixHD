@@ -1,5 +1,3 @@
-### Copyright (C) 2017 NVIDIA Corporation. All rights reserved. 
-### Licensed under the CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
 import argparse
 import os
 from util import util
@@ -20,6 +18,8 @@ class BaseOptions():
         self.parser.add_argument('--use_dropout', action='store_true', help='use dropout for the generator')
         self.parser.add_argument('--data_type', default=32, type=int, choices=[8, 16, 32], help="Supported data type i.e. 8, 16, 32 bit")
         self.parser.add_argument('--verbose', action='store_true', default=False, help='toggles verbose')
+        self.parser.add_argument('--fp16', action='store_true', default=False, help='train with AMP')
+        self.parser.add_argument('--local_rank', type=int, default=0, help='local rank for distributed training')
 
         # input/output sizes       
         self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
@@ -62,10 +62,17 @@ class BaseOptions():
 
         self.initialized = True
 
+<<<<<<< HEAD
     def parse(self, save=True, override_args=None):
         if not self.initialized:
             self.initialize()
         self.opt = self.parser.parse_args(args=override_args)
+=======
+    def parse(self, save=True):
+        if not self.initialized:
+            self.initialize()
+        self.opt = self.parser.parse_args()
+>>>>>>> upstream/master
         self.opt.isTrain = self.isTrain   # train or test
 
         str_ids = self.opt.gpu_ids.split(',')
@@ -81,6 +88,7 @@ class BaseOptions():
 
         args = vars(self.opt)
 
+<<<<<<< HEAD
         if self.opt.verbose:
             print('------------ Options -------------')
             for k, v in sorted(args.items()):
@@ -89,6 +97,14 @@ class BaseOptions():
 
         # save to the disk        
         # save to the disk        
+=======
+        print('------------ Options -------------')
+        for k, v in sorted(args.items()):
+            print('%s: %s' % (str(k), str(v)))
+        print('-------------- End ----------------')
+
+        # save to the disk        
+>>>>>>> upstream/master
         expr_dir = os.path.join(self.opt.checkpoints_dir, self.opt.name)
         util.mkdirs(expr_dir)
         if save and not self.opt.continue_train:
